@@ -26,16 +26,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        print(message)
         a=message.index(' ')
-        print(a)
         user_id=int(message[0:a])
         message=message[a+1:]
-        print(message)
+    
         a=message.index(' ')
         meeting_id=int(message[0:a])
         message=message[a+1:]
-        print(message)
         spec_user= User.objects.get(pk=user_id)
         spec_meeting= meeting.objects.get(pk=meeting_id)
         comment1=comment(user=spec_user, meeting=spec_meeting, Comment=message)

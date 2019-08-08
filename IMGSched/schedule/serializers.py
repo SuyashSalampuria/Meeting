@@ -40,7 +40,7 @@ class MeetingSerializer(serializers.ModelSerializer):
     
 	class Meta:
 		model = meeting
-		fields = ('id', 'time_created', 'purpose',  'venue','private','meet_time','participants')
+		fields = ('id','owner', 'time_created', 'purpose',  'venue','private','meet_time','participants')
 
 class CommentSerializer(serializers.ModelSerializer):
     

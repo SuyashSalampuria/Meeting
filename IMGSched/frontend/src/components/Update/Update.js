@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import axios from 'axios'
 import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import { Input,Button } from 'semantic-ui-react'
 
 class NewMeet extends Component {
     state = {
@@ -11,16 +11,16 @@ class NewMeet extends Component {
         
     }
     putDataHandler = () => {
-        console.log(this.state.user)
+        
         const data={
             "purpose": this.state.purpose,
             "venue": this.state.venue,
             "private": this.state.private,
             "meet_time": this.state.meet_time,
         };
-        console.log(data)
+        
         const url='http://127.0.0.1:8000/meeting/'+this.props.id+'/?format=json'
-        console.log(url)
+       if(data){
         fetch(url,{
             method:'PUT',
             headers:{
@@ -29,29 +29,28 @@ class NewMeet extends Component {
             },
             body: JSON.stringify(data)
         }).then(response => {
-            console.log("PUT data")
-            console.log(response);
+           
         })
-    }
+    }}
     render () {
         if(this.props.isOwner || this.props.user.is_staff){
         return (
             <div className="NewPost">
                 <h1>Update Meeting</h1>
-                <label>Purpose</label>
-                <input type="text" value={this.state.purpose} onChange={(event) => this.setState({purpose: event.target.value})} />
-                <label>Venue</label>
-                <input type="text" value={this.state.venue} onChange={(event) => this.setState({venue: event.target.value})} />
-                <label>Meeting Time</label>
-                <input type="datetime-local"  onChange={(event) => this.setState({meet_time: event.target.value})} />
-                    
-                <button onClick={this.putDataHandler}>Update Meeting</button>
-                <BrowserRouter>
-                <Switch>
-        
-        
-        </Switch>
-        </BrowserRouter>
+                
+                <div class="ui labeled input">
+                <div class="ui label label">Purpose</div>
+                <div class="ui focus input"><input type="text" value={this.state.purpose} onChange={(event) => this.setState({purpose: event.target.value})} required /></div>
+                </div><br></br>
+                <div class="ui labeled input">
+                <div class="ui label label">Venue</div>
+                <div class="ui focus input"><input type="text" value={this.state.venue} onChange={(event) => this.setState({venue: event.target.value})} required /></div>
+                </div><br></br>
+                <div class="ui labeled input">
+                <div class="ui label label">Meeting Time</div>
+                <div class="ui focus input"><input type="datetime-local"  onChange={(event) => this.setState({meet_time: event.target.value})} required /></div>
+                </div><br></br>
+                <Button basic color='green' onClick={this.putDataHandler}>Update Meeting</Button>
             </div>
         );}
         else

@@ -5,10 +5,10 @@ import SignupForm from './components/SignupForm';
 import './App.css';
 import axios from 'axios';
 import 'semantic-ui-css/semantic.min.css'
-import GoogleLogin from 'react-google-login';
-//import {Redirect} from 'react-router-dom'
 import Meet from './containers/schedule'
 import {PostData} from './services/PostData'
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+
 
 class App extends Component {
   constructor(props) {
@@ -20,7 +20,7 @@ class App extends Component {
       username: '',
       user:null,
       allUsers:null,
-      oldUser:true,
+      oldUser:false,
     };
     this.signup=this.signup.bind(this);
   }
@@ -41,19 +41,42 @@ class App extends Component {
     if (postData) {
       axios.get('http://127.0.0.1:8000/meeting/users/?format=json')
       .then(response => {
-          console.log(response)
+         
             this.setState({allUsers: response.data});
-          for(var i=0;i<response.length;i++){
-              if(allUsers[i].username==postData){
+            let i=0;
+            
+          for(i=0;i<response.data.length;i++){
+              if(this.state.allUsers[i].username===postData.username){
                 this.setState({oldUser: true});
                 break;
               }
           }
           
+          if(this.state.oldUser){
+          fetch('http://127.0.0.1:8000/token-auth/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+          })
+            .then(res => res.json())
+            .then(json => {
+              localStorage.setItem('token', json.token);
+              this.setState({
+                logged_in: true,
+                displayed_form: '',
+                username: json.user.username,
+                user: json.user,
+              });
+              
       
+            });
+          }
+          else{
       PostData('signup', postData).then((result) => {
          let responseJson = result;
-         console.log(responseJson)
+         
          this.setState({
           logged_in: true,
           displayed_form: '',
@@ -64,6 +87,7 @@ class App extends Component {
          //this.setState({logged_in: true});
          
       });
+    }
     })
     } else {}
     
@@ -80,15 +104,13 @@ class App extends Component {
         .then(res => res.json())
         .then(json => {
           this.setState({ username: json.username, user: json });
-          console.log("list of users");
-          console.log(this.state.user)
+         
         });
     }
   }
   
   responseGoogle =(response) => {
-    console.log(response);
-    console.log(response.Zi.access_token);
+   
     this.signup(response,'google')
     
       }
@@ -111,7 +133,7 @@ class App extends Component {
           username: json.user.username,
           user: json.user,
         });
-        console.log(this.state.user)
+       
 
       });
   };
@@ -162,30 +184,31 @@ class App extends Component {
       default:
         form = null;
     }
-
+    
     return (
+      <Router>
       <div className="App">
+       
         <Nav
           logged_in={this.state.logged_in}
           display_form={this.display_form}
           handle_logout={this.handle_logout}
+          success={this.responseGoogle}
+          failure={this.responseGoogle}
+          user={this.state.username}
         />
-        <GoogleLogin
-        clientId="143741235966-g7budmcg1f2nqf56l0jnip4u26pi2u8q.apps.googleusercontent.com" 
-        buttonText="LOGIN WITH GOOGLE"
-        onSuccess={this.responseGoogle}
-        onFailure={this.responseGoogle}
-      />
+        
         {form}
         <div>
-          {this.state.logged_in
-            ?<div> Hello {this.state.username}
+          {(this.state.logged_in && this.state.username)
+            ?<div>
                 <Meet user={this.state.user} />
             </div>
             : 'Please Log In'}
         </div>
-            
+       
       </div>
+  </Router>
     );
   }}
 

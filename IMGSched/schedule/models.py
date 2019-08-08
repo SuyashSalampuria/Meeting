@@ -5,7 +5,7 @@ from django.utils import timezone
 
 # Create your models here.
 class meeting(models.Model):
-    owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE)
+    owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE, blank=True)
     time_created = models.DateTimeField(default=timezone.now)
     purpose = models.CharField(max_length=255)
     venue= models.CharField(max_length=255)

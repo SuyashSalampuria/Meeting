@@ -1,4 +1,4 @@
-import React, {Component, ReactNode, SyntheticEvent} from 'react';
+import React, {Component,ReactNode, SyntheticEvent } from 'react';
 import ApiCalendar from 'react-google-calendar-api';
 import 'semantic-ui-css/semantic.min.css'
 class NewMeet extends Component {
@@ -8,9 +8,8 @@ class NewMeet extends Component {
         private: false,
         meet_time: null,
     }
-    
+
     postDataHandler = () => {
-        console.log(this.state.user)
         const data={
             purpose: this.state.purpose,
             venue: this.state.venue,
@@ -18,34 +17,16 @@ class NewMeet extends Component {
             meet_time: this.state.meet_time,
         };
          let eventFromNow = null;
-        console.log(data)
-        var isRaised= false;
-        var promise = new Promise(function(resolve, reject) {
-            try {
-                var ft=ApiCalendar.handleAuthClick()
-                console.log("try block")
-                if (ft){
-                    resolve()
-                }
-            }
-            catch (e) {
-                isRaised=true;
-                reject(e)
-            }
-            
-        });
-        ApiCalendar.handleAuthClick().then(()=>{
-            console.log("event in creation")
          eventFromNow = {
           'summary': data.purpose,
           'location': data.venue,
           'start': {
-            'dateTime': data.meet_time,
+            'dateTime': data.meet_time+':00-00:00',
             'timeZone': 'Asia/Kolkata',
             
           },
           'end': {
-            'dateTime': data.meet_time,
+            'dateTime': data.meet_time+':00-00:00',
             'timeZone': 'Asia/Kolkata',
             
           },
@@ -60,7 +41,7 @@ class NewMeet extends Component {
          console.log("failed to add event to google calendar")
        console.log(error);
         });
-    } )
+    
         fetch('http://127.0.0.1:8000/meeting/all/',{
             method:'POST',
             headers:{
@@ -69,8 +50,7 @@ class NewMeet extends Component {
             },
             body: JSON.stringify(data)
         }).then(response => {
-            console.log("POsted data")
-            console.log(response);
+            
         })
     }
 
@@ -83,13 +63,13 @@ class NewMeet extends Component {
             <div className="NewPost">
                 <h1>Add a Meeting</h1>
                 <label>Purpose</label>
-                <input type="text" value={this.state.purpose} onChange={(event) => this.setState({purpose: event.target.value})} />
+                <input type="text" value={this.state.purpose} onChange={(event) => this.setState({purpose: event.target.value})} required />
                 <label>Venue</label>
-                <input type="text" value={this.state.venue} onChange={(event) => this.setState({venue: event.target.value})} />
+                <input type="text" value={this.state.venue} onChange={(event) => this.setState({venue: event.target.value})} required/>
                 <label>Meeting Time</label>
-                <input type="datetime-local" value={this.state.meet_time} onChange={(event) => this.setState({meet_time: event.target.value})} />
+                <input type="datetime-local" value={this.state.meet_time} onChange={(event) => this.setState({meet_time: event.target.value})} required />
                 <label>Private</label>
-                <input type="checkbox" value={this.state.private} onChange={(event) => this.setState({private: event.target.value})} />    
+                <input type="checkbox" value={this.state.private} onChange={(event) => this.setState({private: event.target.value})} required /> 
                 <button onClick={this.postDataHandler}>Add Meeting</button>
             </div>
             </div>
